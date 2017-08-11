@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+		<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../js/easyui/locale/easyui-lang-zh_CN.js"></script>
+		<script type="text/javascript" src="../js/ztree/jquery.ztree.all-3.5.js" charset="UTF-8"></script>
+		<link rel="stylesheet" href="../js/easyui/themes/default/easyui.css" />
+		<link rel="stylesheet" href="../js/easyui/themes/icon.css" />
+		<link rel="stylesheet" type="text/css" href="../js/ztree/zTreeStyle.css" />
+		<script type="text/javascript">
+			$(function() {
+				/*$("#aaa").menubutton('disable');*/
+				$("#but1").click(function(){
+					//$.messager.alert("标题","显示的消息","error")
+					$.messager.prompt("标题","输入你的电话",function(r){
+						if(r){
+							alert("你输入的电话是"+r)
+						}
+					})
+				});
+			});
+		</script>
+	</head>
+
+	<body>
+		<a href="javascript:void(0)" id="aaa" class="easyui-menubutton" data-options="menu:'#mm'">编辑</a>
+
+		<div id="mm" style="width: 100px;">
+			<div>add</div>
+			<div>delete</div>
+			<div>cut</div>
+			<div id="closeAll">closeAll</div>
+		</div>
+		
+		<button id="but1" >点击</button>
+	</body>
+
+</html>

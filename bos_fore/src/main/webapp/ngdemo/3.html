@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../js/angular.min.js" type="text/javascript"></script>
+		<script src="../js/angular-route.min.js" type="text/javascript"></script>
+	</head>
+	<body ng-app="myapp">
+		<div>
+			<h1>head</h1>
+			<a href="#/index">首页</a>
+			<a href="#/bay">下单</a>
+			<a href="#/lognin">登录</a>
+		</div>
+			
+		<div ng-view>
+			
+			
+		</div>
+		<div><h1>foot</h1></div>
+		
+
+		<script type="text/javascript">
+			angular.module('myapp',['ngRoute'])
+			.config(["$routeProvider",function($routeProvider){
+				$routeProvider.when('/index',{
+					templateUrl:'1.html'
+				}).when('/bay',{
+					templateUrl:'2.html'
+				}).when('/lognin',{
+					templateUrl:'4.html'
+				});
+			}]);
+		</script>
+	</body>
+</html>

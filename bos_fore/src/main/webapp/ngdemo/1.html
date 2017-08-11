@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../js/angular.min.js" type="text/javascript"></script>
+	</head>
+	<body ng-app="myapp" ng-controller="myctrl">
+		<input id="name" type="text" ng-model="name"/>
+		<input type="button" value="单击清空" ng-click="clearVal();" >
+		<input type="button" value="双击重置"  ng-dblclick="resetVal();"><br />
+			{{name}}			
+		<script type="text/javascript">
+			 	var myapp = angular.module("myapp",[]);
+			 	myapp.controller("myctrl",function($scope){
+			 		$scope.name="hello";
+			 		$scope.clearVal = function(){
+			 			$scope.name="";
+			 		};
+			 		$scope.resetVal = function(){
+			 			$scope.name="reset success"
+			 		}
+			 	});
+		</script>
+	</body>
+</html>

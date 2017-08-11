@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+		<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../js/easyui/locale/easyui-lang-zh_CN.js"></script>
+		<script type="text/javascript" src="../js/ztree/jquery.ztree.all-3.5.js" charset="UTF-8"></script>
+		<link rel="stylesheet" href="../js/easyui/themes/default/easyui.css" />
+		<link rel="stylesheet" href="../js/easyui/themes/icon.css" />
+		<link rel="stylesheet" type="text/css" href="../js/ztree/zTreeStyle.css"/>
+		<script type="text/javascript">
+			$(function() {
+				$("#open1").bind('click', function() {
+					$("#tab1").tabs('add', {
+						title: "table3",
+						closable:true
+					})
+				})
+			})
+		</script>
+	</head>
+
+	<body class="easyui-layout">
+		<div data-options="region:'north'" style="height: 120px;">北部</div>
+		<div data-options="region:'west',title:'window设置'" style="width: 200px;">
+			<div class="easyui-accordion" data-options="fit:true,animate:true,border:false">
+				<div data-options="title:'系统'">
+					<a id="open1">显示</a>
+				</div>
+				<div data-options="title:'设备'">折叠区域2</div>
+				<div data-options="title:'个性化'">折叠区域3</div>
+			</div>
+
+		</div>
+		<div data-options="region:'center',title:'Center',iconCls:'icon-reload'">
+
+			<div id="tab1" class="easyui-tabs">
+				<div data-options="title:'table1',closable:true"></div>
+				<div data-options="title:'table2',closable:true"></div>
+			</div>
+
+		</div>
+		<div data-options="region:'east'" style="width: 200px;">东边</div>
+		<div data-options="region:'south'" style="height: 100px;">南部</div>
+		
+		
+		
+	</body>
+
+</html>
