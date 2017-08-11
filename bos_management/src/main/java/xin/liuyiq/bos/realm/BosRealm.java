@@ -24,7 +24,7 @@ import xin.liuyiq.bos.service.system.PermissionService;
 import xin.liuyiq.bos.service.system.RoleService;
 import xin.liuyiq.bos.service.system.UserService;
 
-@Component("bosRealm")
+// @Component("bosRealm")
 public class BosRealm extends AuthorizingRealm{
 	
 	@Autowired
@@ -40,7 +40,9 @@ public class BosRealm extends AuthorizingRealm{
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
 		// 这里面放了user的登录信息
 		UsernamePasswordToken usernamePasswordToken =  (UsernamePasswordToken) token;
+		
 		User user = userService.findByUsername(usernamePasswordToken.getUsername());
+		
 		if(user == null){
 			// 没有获取到user,用户名密码错误
 			return null;

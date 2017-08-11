@@ -26,6 +26,8 @@
 	<import resource="applicationContext-elasticsearch.xml"/>
 	<!-- 导入shiro -->
 	<import resource="applicationContext-shiro.xml"/>
+	<!-- 导入cache -->
+	<import resource="applicationContext-cache.xml"/>
 		
 	
 </beans>

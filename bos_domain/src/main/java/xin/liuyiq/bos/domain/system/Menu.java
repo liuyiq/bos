@@ -1,5 +1,6 @@
 package xin.liuyiq.bos.domain.system;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "T_MENU")
-public class Menu {
+public class Menu implements Serializable{
 	@Id
 	@GeneratedValue
 	@Column(name = "C_ID")
@@ -34,8 +35,7 @@ public class Menu {
 	@Column(name = "C_TYPE")
 	private String type; // 类型 1 系统操作
 	@ManyToMany(mappedBy = "menus")
-	private Set<Role> roles = new HashSet<Role>(0);
-
+	private Set<Role> roles = new HashSet<Role>();
 	@OneToMany(mappedBy = "parentMenu")
 	private Set<Menu> childrenMenus = new HashSet<Menu>();
 

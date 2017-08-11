@@ -22,6 +22,8 @@
 		<property name="successUrl" value="/index.html"/>
 		<!-- 没有登录权限后跳转后跳转的页面 -->
 		<property name="unauthorizedUrl" value="/unauthorized.html"></property>
+		
+		
 		<property name="filterChainDefinitions">
 			<value>
 				/login.html* = anon
@@ -31,8 +33,11 @@
 				/images/** = anon
 				/user_login.action* = anon
 				/service/** = anon
+				
 				/pages/base/courier.html* = perms[courier:list]
+				
 				/pages/base/area.html* = roles[base]
+				
 				/** = authc
 			</value>
 		</property>
@@ -40,7 +45,25 @@
 	
 	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
 		<property name="realm" ref="bosRealm"/>
+		<property name="cacheManager" ref="shiroCacheManager"/>
 	</bean>
+	
+	<!-- 配置Realm -->
+	<bean id="bosRealm" class="xin.liuyiq.bos.realm.BosRealm">
+		<!-- 缓存区的名字 就是 ehcache.xml 自定义 cache的name -->
+		<property name="authorizationCacheName" value="bos" />
+	</bean>
+	
+	<!-- 开启shiro注解模式  -->
+	<!-- <bean
+		class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+		depends-on="lifecycleBeanPostProcessor" >
+		<property name="proxyTargetClass" value="true" />
+	</bean>
+		
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		 <property name="securityManager" ref="securityManager"/>
+	</bean> -->
 	
 	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"></bean>
 </beans>

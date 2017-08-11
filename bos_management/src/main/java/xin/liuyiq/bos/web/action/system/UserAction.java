@@ -30,8 +30,11 @@ public class UserAction extends BaseAction<User>{
 	
     @Action(value = "user_login",results = {@Result(name = SUCCESS,type = "redirect",location = "index.html"),@Result(name = LOGIN,type = "redirect",location = "login.html")})
     public String login(){
-        Subject subject = SecurityUtils.getSubject();
+      
+    	Subject subject = SecurityUtils.getSubject();
+    	
         AuthenticationToken token = new UsernamePasswordToken(model.getUsername(),model.getPassword());
+      
         
         try {
 			subject.login(token);

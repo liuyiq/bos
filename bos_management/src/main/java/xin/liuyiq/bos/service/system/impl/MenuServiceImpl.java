@@ -5,6 +5,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +24,10 @@ public class MenuServiceImpl implements MenuService {
     @Autowired
     private MenuRepository menuRepository;
     @Override
+    @CacheEvict(value="menu",allEntries=true)
     public List<Menu> query() {
         return menuRepository.findAll();
     }
-
     @Override
     public void save(Menu menu) {
     	// 如果页面上的父菜单项没有选中,会发生瞬时对象异常
@@ -37,13 +41,12 @@ public class MenuServiceImpl implements MenuService {
     }
 
 	@Override
+	@Cacheable(value="menu")
 	public List<Menu> findByUser(User user) {
 		if(user.getType().intValue() == 1){
 			return menuRepository.findAll();
 		}else{
 			return menuRepository.findByUser(user.getId());
 		}
-		
-		
 	}
 }
