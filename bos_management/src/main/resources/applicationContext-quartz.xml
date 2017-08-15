@@ -12,7 +12,7 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 		http://www.springframework.org/schema/data/jpa 
 		http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
-
+	<!-- 定时更新宣传活动的状态 -->
 	<bean id="jobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
 		<property name="jobClass" value="xin.liuyiq.bos.quartz.PromotionJob"/>
 	</bean>
@@ -20,7 +20,18 @@
 	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="jobDetail" />
 		<!-- 服务器启动5秒后,每隔一分钟执行一次 -->
-		<property name="cronExpression" value="5 0/1 * ? * *" />
+		<property name="cronExpression" value="0 0/1 * ? * *" />
+	</bean>
+	
+	<!-- 定时更新ElasticSearch和数据库中的运单信息 -->
+	<bean id="wayBillJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="jobClass" value="xin.liuyiq.bos.quartz.WayBillJob"/>
+	</bean>
+	
+	<bean id="wayBillCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="wayBillJobDetail" />
+		<!-- 每隔一个小时去更新一次服务器中和数据库中的运单 -->
+		<property name="cronExpression" value="0 0 0/1 ? * *" />
 	</bean>
 	
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean" id="scheduled">
@@ -28,6 +39,7 @@
 		<property name="triggers">
 			<list>
 				<ref bean="cronTrigger"/>
+				<ref bean="wayBillCronTrigger"/>
 			</list>
 		</property>
 	</bean>

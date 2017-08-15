@@ -34,9 +34,64 @@
 	            return serializeObj;  
 	        };
 			function doSearch() {
+				// 底层走的是ajax请求,是post提交
 				var params = $("#searchForm").serializeJson();
 				$("#tt").datagrid('load',params);
 			}
+			
+			$(function(){
+				$("#transitBtn").click(function(){
+					var rows = $("#tt").datagrid('getSelections')
+					if(rows.length == 0){
+						$.messager.alert("警告","至少选中一行数据","warning");
+						return ;
+					}
+					
+					// 把运单状态已发货的运单存起来
+					var wayBillNumArray = new Array();
+					for(var i=0;i<rows.length;i++){
+						if(rows[i].signStatus != 1){
+							wayBillNumArray.push(rows[i].wayBillNum);
+						}
+					}
+					var wayBillNums = wayBillNumArray.join();
+					// 对已发货的运单进行控制不能进行操作
+					if(wayBillNumArray.length != 0){
+						$.messager.alert("警告",wayBillNums+"运单已发货,不能执行次操作","warning");
+						return ;
+					}
+					
+					// 执行中转配送操作 
+					var array = new Array();
+					for(var i=0;i<rows.length;i++){
+						array.push(rows[i].id);
+					}
+					var wayBillIds = array.join();
+					$.post("../../transit_create.action",{wayBillIds:wayBillIds},function(data){
+						if(data.success){
+							// 创建成功
+							$.messager.show({
+								title:'系统消息',
+								msg:data.msg
+							});
+							
+						}else{
+							$.messager.show({
+								title:'系统消息',
+								msg:data.msg
+							});
+						}
+					})
+					$("#tt").datagrid('load');
+				})
+				
+				// 导出Excel表格
+				$("#exportXlsBtn").click(function(){
+					$("#searchForm").attr('action','../../report_exportXls.action');
+					$("#searchForm").submit();
+				});
+				
+			})
 		</script>
 	</head>
 
@@ -50,9 +105,13 @@
 			<a id="help" icon="icon-save" href="#" class="easyui-linkbutton" plain="true">保存</a>
 			<a id="help" icon="icon-print" href="#" class="easyui-linkbutton" plain="true">打印标签</a>
 			<a id="help" icon="icon-print" href="#" class="easyui-linkbutton" plain="true">打印工作单</a>
+			<a id="transitBtn" icon="icon-edit" href="#" class="easyui-linkbutton" plain="true">中转配送</a>
+			
+			<a id="exportXlsBtn" icon="icon-print" href="#" class="easyui-linkbutton" plain="true">导出Excel表格</a>
+			<a id="exportPdfBtn" icon="icon-print" href="#" class="easyui-linkbutton" plain="true">导出Pdf文件</a>
 			
 			<br />
-				<form id="searchForm">
+				<form id="searchForm" method="post">
 					运单号：<input name="wayBillNum" style="line-height:26px;border:1px solid #ccc">
 					发货地：<input name="sendAddress" style="line-height:26px;border:1px solid #ccc" >
 					收货地：<input name="recAddress" style="line-height:26px;border:1px solid #ccc" >
@@ -99,6 +158,7 @@
 					<th field="vol" width="80">体积</th>
 					<th field="floadreqr" width="80">配载要求</th>
 					<th field="wayBillType" width="80">运单类型</th>
+					<th field="signStatus" width="80" hidden="hidden">运单状态</th>
 				</tr>
 			</thead>
 		</table>

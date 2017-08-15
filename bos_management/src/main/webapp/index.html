@@ -32,27 +32,29 @@
 				};
 				
 				// 基本功能菜单加载
-				$.post("menu_showmenu.action",function(data){
+				/*$.post("menu_showmenu.action",function(data){
 					for(var i = 0;i<data.length;i++){
 						if(data[i].type == 1){
 							data.splice(i,1);
 							i--;
 						}
 					}
-					$.fn.zTree.init($("#treeMenu"), setting, data);
-				},"json");
-				
-				
-				// 系统管理菜单加载
+					$.fn.zTree.init($("#baseMenu"), setting, data);
+				});*/
 				$.post("menu_showmenu.action",function(data){
+					var baseMenuArray = new Array();
+					var adminMenuArray = new Array();
+					
 					for(var i = 0;i<data.length;i++){
-						if(data[i].type == 2){
-							data.splice(i,1);
-							i--;
+						if(data[i].type == 1){ //类型 1 是系统菜单中的内容
+							adminMenuArray.push(data[i])
+						}else{
+							baseMenuArray.push(data[i])
 						}
 					}
-					$.fn.zTree.init($("#adminMenu"), setting, data);
-				},"json");
+					$.fn.zTree.init($("#baseMenu"), setting, baseMenuArray);
+					$.fn.zTree.init($("#adminMenu"), setting, adminMenuArray);
+				});
 				
 				// 页面加载后 右下角 弹出窗口
 				window.setTimeout(function(){
@@ -206,7 +208,7 @@
 		<div data-options="region:'west',split:true,title:'菜单导航'" style="width:200px">
 			<div class="easyui-accordion" fit="true" border="false">
 				<div title="基本功能" data-options="iconCls:'icon-mini-add'" style="overflow:auto">
-					<ul id="treeMenu" class="ztree"></ul>
+					<ul id="baseMenu" class="ztree"></ul>
 				</div>
 				<div title="系统管理" data-options="iconCls:'icon-mini-add'" style="overflow:auto">
 					<ul id="adminMenu" class="ztree"></ul>

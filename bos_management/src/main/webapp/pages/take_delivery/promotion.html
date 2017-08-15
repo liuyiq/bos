@@ -65,7 +65,14 @@
 						}, {
 							field: 'status',
 							title: '状态',
-							width: 100
+							width: 100,
+							formatter: function(value,row,index){
+								if(value==2){
+									return "已结束"
+								}else{
+									return "进行中"
+								}
+							}
 						}]
 					],
 					pagination: true,
@@ -116,8 +123,9 @@
 			});
 		</script>
 	</head>
+	
 
-	<body class="easyui-layout">
+	<body class="easyui-layout" >
 		<div region="center" style="overflow:auto;padding:5px;">
 			<table id="grid"></table>
 		</div>

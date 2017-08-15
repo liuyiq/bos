@@ -1,5 +1,9 @@
 package xin.liuyiq.bos.service.take_delivery.impl;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -10,7 +14,10 @@ import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.query.WildcardQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,17 +41,24 @@ public class WayBillServiceImpl implements WayBillService {
 		WayBill persistWayBill = wayBillRepository.findByWayBillNum(wayBill.getWayBillNum());
 		try {
 			if (persistWayBill == null || persistWayBill.getId() == null) {
+				// 设置运状态为待发货
+				wayBill.setSignStatus(1);
 				// 首次录入运单时候保存运单
 				wayBillRepository.save(wayBill);
 				// 保存索引
 				wayBillIndexRepository.save(wayBill);
 			} else {
-				// 修改运单信息后保存运单
-				Integer id = persistWayBill.getId();
-				BeanUtils.copyProperties(persistWayBill, wayBill);
-				persistWayBill.setId(id);
-				// 保存索引
-				wayBillIndexRepository.save(persistWayBill);
+				if(persistWayBill.getSignStatus() == 1){
+					// 修改运单信息后保存运单
+					Integer id = persistWayBill.getId();
+					BeanUtils.copyProperties(persistWayBill, wayBill);
+					persistWayBill.setId(id);
+					persistWayBill.setSignStatus(1);
+					// 保存索引
+					wayBillIndexRepository.save(persistWayBill);
+				}else{
+					throw new RuntimeException("货物已经发出,不能修改运单");
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -118,6 +132,80 @@ public class WayBillServiceImpl implements WayBillService {
 	@Override
 	public WayBill findByWayBillNum(String wayBillNum) {
 		return wayBillRepository.findByWayBillNum(wayBillNum);
+	}
+
+	@Override
+	public void syncIndex() {
+		List<WayBill> wayBills = wayBillRepository.findAll();
+		// 同步索引库
+		wayBillIndexRepository.save(wayBills);
+	}
+
+	@Override
+	public List<WayBill> findAll(WayBill wayBill) {
+		// 判断查询条件
+		if (StringUtils.isBlank(wayBill.getWayBillNum()) && StringUtils.isBlank(wayBill.getSendAddress())
+				&& StringUtils.isBlank(wayBill.getRecAddress()) && StringUtils.isBlank(wayBill.getSendProNum())
+				&& (wayBill.getSignStatus() == null || wayBill.getSignStatus() == 0)) {
+			// 无条件查询
+			return wayBillRepository.findAll();
+		} else {
+			BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+
+			// 运单号
+			if (StringUtils.isNotBlank(wayBill.getWayBillNum())) {
+				QueryBuilder termQueryr = new TermQueryBuilder("wayBillNum", wayBill.getWayBillNum());
+				boolQuery.must(termQueryr);
+			}
+
+			// 发货地址
+			if (StringUtils.isNotBlank(wayBill.getSendAddress())) {
+				BoolQueryBuilder query = new BoolQueryBuilder();
+				// 默认词条分词
+				QueryBuilder wildcardQuery = new WildcardQueryBuilder("sendAddress",
+						"*" + wayBill.getSendAddress() + "*");
+				query.should(wildcardQuery);
+				// 多词条组分陪陪,分词后再匹配
+				QueryBuilder stringQueryBuilder = new QueryStringQueryBuilder(wayBill.getSendAddress())
+						.field("sendAddress").defaultOperator(Operator.AND);
+				query.should(stringQueryBuilder);
+
+				boolQuery.must(query);
+			}
+
+			// 收获地址
+			if (StringUtils.isNotBlank(wayBill.getRecAddress())) {
+				BoolQueryBuilder query = new BoolQueryBuilder();
+
+				QueryBuilder wildcardQuery = new WildcardQueryBuilder("recAddress",
+						"*" + wayBill.getRecAddress() + "*");
+				query.should(wildcardQuery);
+
+				QueryStringQueryBuilder stringQueryBuilder = new QueryStringQueryBuilder(wayBill.getRecAddress())
+						.field("recAddress").defaultOperator(Operator.AND);
+				query.should(stringQueryBuilder);
+
+				boolQuery.must(query);
+			}
+			// sendProNum 产品类型
+			if (StringUtils.isNotBlank(wayBill.getSendProNum())) {
+				QueryBuilder termQueryr = new TermQueryBuilder("sendProNum", wayBill.getSendProNum());
+				boolQuery.must(termQueryr);
+			}
+			// signStatus 运单状态
+			if (wayBill.getSignStatus() != null && wayBill.getSignStatus() != 0) {
+				QueryBuilder termQueryr = new TermQueryBuilder("signStatus", wayBill.getSignStatus());
+				boolQuery.must(termQueryr);
+			}
+			// 封装条件
+			Iterable<WayBill> iterable = wayBillIndexRepository.search(boolQuery);
+			
+			List<WayBill> wayBills = new ArrayList<WayBill>();
+			for (WayBill wayBillIterable : iterable) {
+				wayBills.add(wayBillIterable);
+			}
+			return wayBills;
+		}
 	}
 
 }

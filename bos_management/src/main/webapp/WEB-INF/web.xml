@@ -23,7 +23,8 @@
             <param-name>entityManagerFactoryBeanName</param-name>    
             <param-value>entityManagerFactory</param-value>    
         </init-param>  -->    
-    </filter>    
+    </filter>  
+      
     <filter-mapping>    
         <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>    
         <url-pattern>/*</url-pattern>    

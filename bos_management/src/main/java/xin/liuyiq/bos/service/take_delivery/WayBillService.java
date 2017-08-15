@@ -1,5 +1,7 @@
 package xin.liuyiq.bos.service.take_delivery;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,5 +14,9 @@ public interface WayBillService {
 	public Page<WayBill> pageQuery(WayBill wayBill ,Pageable pageable);
 
 	public WayBill findByWayBillNum(String wayBillNum);
+
+	public void syncIndex();
+
+	public List<WayBill> findAll(WayBill model);
 
 }

@@ -35,6 +35,7 @@ public class Menu implements Serializable{
 	@Column(name = "C_TYPE")
 	private String type; // 类型 1 系统操作
 	@ManyToMany(mappedBy = "menus")
+	
 	private Set<Role> roles = new HashSet<Role>();
 	@OneToMany(mappedBy = "parentMenu")
 	private Set<Menu> childrenMenus = new HashSet<Menu>();
